@@ -1,3 +1,5 @@
+use web_sys::Performance;
+
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
     // `set_panic_hook` function at least once during initialization, and then
@@ -7,4 +9,23 @@ pub fn set_panic_hook() {
     // https://github.com/rustwasm/console_error_panic_hook#readme
     #[cfg(feature = "console_error_panic_hook")]
     console_error_panic_hook::set_once();
+}
+
+pub struct Timer {
+    start: f64,
+    perf: Performance,
+}
+
+impl Timer {
+    pub fn now() -> Timer {
+        let perf = web_sys::window().unwrap().performance().unwrap();
+        Timer {
+            start: perf.now(),
+            perf,
+        }
+    }
+
+    pub fn elapsed_s(&self) -> f64 {
+        (self.perf.now() - self.start) / 1000.0
+    }
 }
